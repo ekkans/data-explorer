@@ -9,7 +9,7 @@ jQuery ->
 window.fbAsyncInit = ->
   resetUI()
   initEventHandlers()
-  FB.init(appId: '<%= ENV["FACEBOOK_APP_ID"] %>', cookie: true)
+  FB.init(appId: $('body').data('facebook-app-id'), cookie: true)
   FB.getLoginStatus (response) =>
     if response.status is 'connected'
       showActions()
