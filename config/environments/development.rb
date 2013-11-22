@@ -27,13 +27,9 @@ DataExplorer::Application.configure do
   # number of complex assets.
   config.assets.debug = true  
 
-    config.action_mailer.smtp_settings = {
-      :address   => "smtp.mandrillapp.com",
-      :port      => 25,
-      :user_name => ENV["MANDRILL_USERNAME"],
-      :password  => ENV["MANDRILL_API_KEY"]
-    }
+  # mailcatcher gem
+  config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
+  
   # Send email in development mode.
   config.action_mailer.perform_deliveries = true
-
 end
