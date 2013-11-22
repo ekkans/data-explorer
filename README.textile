@@ -23,3 +23,7 @@ h2. Development
 h2. Email
 
 The application is configured to send email using a Mandrill account.
+
+h2. Deployment
+
+Compatible with heroku
