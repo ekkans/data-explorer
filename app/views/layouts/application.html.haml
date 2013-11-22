@@ -1,4 +1,6 @@
 !!!
+/
+  Coded with love by Sébastien Bourdu - sebastien@sebastienbourdu.com - www.sebastienbourdu.com
 %html
   %head
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
@@ -11,5 +13,6 @@
     %header
       = render 'layouts/navigation'
     %main{:role => "main"}
-      = render 'layouts/messages'
-      = yield
+      .container
+        = render 'layouts/messages'
+        = yield
