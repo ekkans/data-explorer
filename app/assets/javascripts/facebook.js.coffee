@@ -45,6 +45,7 @@ window.showActions = ->
     .on 'click', '.see-my-groups', (e) ->
       e.preventDefault()
       FB.api "/me/groups", (resp) ->
+        groupsData = resp.data
         if resp.data.length > 0
           target = $("#facebook .groups-section")
           $(target).html('<h4>My groups</h4>')
@@ -61,14 +62,41 @@ window.showActions = ->
       $(target).html("<h4>Group: #{groupName}</h4>")
       $(target).append("<hr/>")
       FB.api "/#{groupId}/members", (resp) ->
-        $(target).append("<h4>Members</h4>")
-        $(target).append('<ol>')
-        $(target).append('</ol>')
-        for member in resp.data
+        membersData = [] # resp.data
+        membersDataLength = resp.data.length
+        $(target).append("<h4 class='members'>Members</h4>")
+        $(target).append('<table class="table table-striped table-hover table-responsive"></table>')
+        $(target).find('table').append('<thead><tr><th>#</th><th>Name</th><th>Location</th></tr></thead>')
+        $(target).find('table').append('<tbody></tbody>')
+        for member, index in resp.data
+          $(target).find('tbody').append("<tr class='member' data-id='#{member.id}'><td>#{index + 1}</td>
+            <td class='name'></td><td class='location'></td></tr>")
           FB.api "/#{member.id}", (resp) ->
             member = resp
+            membersData.push(member)
             if resp.location
               locationId = resp.location['id']
               locationName = resp.location['name']
-            $(target).find('ol').append("<li><a href='#' class='member' data-id='#{member.id}'
-              data-name='#{member.name}'>#{member.name}#{if locationName? then " - #{locationName}" else ""}</a></li>")
+            $(target).find(".member[data-id='#{member.id}']")
+              .find('.name').html(member.name)
+              .parents('tr')
+              .find('.location').html(if locationName? then locationName else "")
+            if membersData.length is membersDataLength
+              # Ability to copy names and locations to clipboard
+              $(target)
+                .find('.members')
+                .before("<ul class='pull-right list-inline'></ul>")
+                .parents('.groups-section').find('ul')
+                .append("<li><a href='#' class='pull-right export zero-clipboard'>Copy data</a></li>")
+              names = ""
+              locations = ""
+              for member in membersData
+                names += member.name + "\r\n"
+                if member.location? and locations.indexOf(member.location.name) is -1
+                  locations += member.location.name + "\r\n"
+              clip = new ZeroClipboard()
+              clip.glue($(".zero-clipboard"))
+              clip.on "dataRequested", (client, args) ->
+                clip.setText("#{names}\r\n#{locations}")
+              clip.on "complete", (client, text) ->
+                alert "Text copied to clipboard."
